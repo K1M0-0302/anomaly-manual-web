@@ -854,6 +854,7 @@ function renderSheet(sheet, animatePlate = true) {
   logHead();
   idleDeadline(sheet.deadline || DEADLINE);
   setScene(sheet.scene, animatePlate, Boolean(sheet.mirror), sheet.variant || null);
+  bgm.mood(sheet.special === "sikgu" ? "sikgu" : "house", state.page);
   bleed($(".sheet--rx"), state.page);
   // 독백이 더듬는 덩이. 식구 앞에서는 두 덩이, 아주 깊은 쪽에서는 가끔 한 덩이다. 칩이 잘라 먹을 덩이는 고르지 않는다.
   const shaken = sheet.special === "sikgu" ? 2 : state.page >= DERANGE_FROM && Math.random() < 0.5 ? 1 : 0;
@@ -997,6 +998,7 @@ async function settle(picked) {
   state.run = result.run;
   if (result.scare && !reduced) {
     const token = ++state.turn;
+    bgm.sting();
     await scareIn();
     if (token !== state.turn) return;
     state.page = state.run.page;
@@ -1039,6 +1041,7 @@ async function renderEnd(over) {
   await wait(t);
   if (token !== state.turn) return;
   const dead = over.end === "dead";
+  bgm.mood(dead ? "dead" : "calm");
   if (dead) {
     const sheet = $(".sheet--rx");
     await warp(over.kind, body, sheet);
@@ -1423,6 +1426,26 @@ $(".js-plate-file").addEventListener("change", (e) => {
     wait = setTimeout(() => fitPage($(".js-page-body")), 120);
   });
 }
+
+// 배경음은 첫 조작에서 켠다. 브라우저가 그 전에는 소리를 막는다.
+const sound = $(".js-sound");
+const paintSound = () => {
+  sound.setAttribute("aria-pressed", String(!bgm.isMuted()));
+  sound.textContent = bgm.isMuted() ? "소리 끔" : "소리 켬";
+};
+sound.addEventListener("click", (e) => {
+  e.stopPropagation();
+  bgm.setMuted(!bgm.isMuted());
+  paintSound();
+});
+paintSound();
+const wake = () => {
+  bgm.start();
+  removeEventListener("pointerdown", wake, true);
+  removeEventListener("keydown", wake, true);
+};
+addEventListener("pointerdown", wake, true);
+addEventListener("keydown", wake, true);
 
 renderCells(DEADLINE);
 startCopy();

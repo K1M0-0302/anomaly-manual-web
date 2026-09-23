@@ -68,6 +68,25 @@ button {
 
 .switch { display: none; }
 
+/* 배경음 켜고 끄기. 책상 오른쪽 아래 구석에 기계 글씨로 둔다. */
+.sound {
+  position: fixed;
+  right: 12px;
+  bottom: 10px;
+  z-index: 30;
+  padding: 4px 8px;
+  border: 1px solid var(--rule);
+  background: var(--desk);
+  color: var(--paper-shade);
+  font-family: var(--f-machine);
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.sound:hover,
+.sound:focus-visible { opacity: 1; }
+.sound[aria-pressed="false"] { color: var(--rule); }
+
 /* overflow: clip은 "피" 절(1342행 근처) 두 번째 .desk 규칙에 있다. 캐스케이드로 합쳐지지만 멀리 있다. */
 .desk {
   container-type: inline-size;
