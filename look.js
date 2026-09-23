@@ -18,9 +18,12 @@ const T = reduced
   : { line: 280, gap: 140, tick: 320, leave: 260, arrive: 720, entry: 260 };
 
 
+// 첫 판은 언제나 1회, 사본 0409다(2026-09-23 사용자 결정). 앞 사본의 일지와 근거는 비어 있다.
+const FIRST_CLONE = 409;
+
 const state = {
-  clone: 413,
-  entry: 4,
+  clone: FIRST_CLONE,
+  entry: 1,
   page: 1,
   place: "복도",
   turn: 0,
@@ -1235,6 +1238,7 @@ function newCopy() {
   state.clone += 1;
   state.entry += 1;
   setAll(".js-clone", pad(state.clone));
+  setAll(".js-copies", `${pad(FIRST_CLONE)}~${pad(state.clone)}`);
   setAll(".js-entry", state.entry);
   const tx = $(".js-tx");
   tx.textContent = "송신 대기";
