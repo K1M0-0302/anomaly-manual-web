@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>잘못 베낀 집 · 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Gothic+Coding:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="look.css">
+</head>
+<body class="is-solo">
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <filter id="wear" x="-2%" y="-10%" width="104%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="1.8" numOctaves="1" seed="4" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.38" result="holes"/>
+    <feComposite in="SourceGraphic" in2="holes" operator="in"/>
+  </filter>
+  <filter id="toner-1" x="-2%" y="-10%" width="104%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="3" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.62" result="holes"/>
+    <feComposite in="SourceGraphic" in2="holes" operator="in"/>
+  </filter>
+  <filter id="toner-2" x="-2%" y="-10%" width="104%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="2" seed="7" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.8" result="holes"/>
+    <feComposite in="SourceGraphic" in2="holes" operator="in" result="c"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.05 0.9" numOctaves="1" seed="2" result="w"/>
+    <feDisplacementMap in="c" in2="w" scale="0.9"/>
+  </filter>
+  <filter id="toner-3" x="-2%" y="-10%" width="104%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="11" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.6 2.1" result="holes"/>
+    <feComposite in="SourceGraphic" in2="holes" operator="in" result="c"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.04 0.8" numOctaves="1" seed="9" result="w"/>
+    <feDisplacementMap in="c" in2="w" scale="1.4"/>
+  </filter>
+  <filter id="stamp-big" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="8" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.5 1.55" result="holes"/>
+    <feComposite in="SourceGraphic" in2="holes" operator="in"/>
+  </filter>
+  <filter id="tear" x="-6%" y="0" width="112%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0 0.05" numOctaves="1" seed="12" result="n"/>
+    <feComponentTransfer in="n" result="bands">
+      <feFuncR type="discrete" tableValues="0.5 0.5 0.26 0.5 0.5 0.78 0.5 0.4"/>
+      <feFuncG type="discrete" tableValues="0.5"/>
+    </feComponentTransfer>
+    <feDisplacementMap in="SourceGraphic" in2="bands" scale="56" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="stamp-ink" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="5" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.6" result="holes"/>
+    <feComposite in="SourceGraphic" in2="holes" operator="in"/>
+  </filter>
+  <!-- 핏자국 가장자리. 종이 결을 타고 번진 것처럼 윤곽을 흩뜨린다. 밀려난 가장자리가 잘리지 않게 여백을 넉넉히 둔다. -->
+  <filter id="blood" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="6" result="fiber"/>
+    <feDisplacementMap in="SourceGraphic" in2="fiber" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<nav class="switch" aria-label="보는 장">
+  <button type="button" class="switch-tab js-switch" data-show="rx" aria-pressed="true">수신 팩스</button>
+  <button type="button" class="switch-tab js-switch" data-show="manual" aria-pressed="false">매뉴얼<span class="switch-badge js-badge" hidden></span></button>
+</nav>
+
+<main class="desk js-desk" data-show="rx">
+  <article class="sheet sheet--rx" aria-labelledby="rx-title">
+    <header class="fax-head">
+      <p class="fax-line wear js-head">
+        <span>수신 <span class="js-clock">03:14</span></span>
+        <span>발신 CHIP-<b class="js-clone">0413</b></span>
+        <span>본부 기록과</span>
+        <span>쪽 <b class="js-page">1</b></span>
+      </p>
+    </header>
+
+    <div class="rx-top">
+      <h1 id="rx-title" class="rx-title wear">잘못 베낀 집 진입 기록 제<span class="js-entry">4</span>회</h1>
+      <dl class="rx-meta">
+        <div><dt>실험체</dt><dd class="js-clone">0413</dd></div>
+        <div><dt>장소</dt><dd class="js-place">복도</dd></div>
+      </dl>
+    </div>
+
+    <figure class="plate js-plate-box">
+      <div class="plate-frame">
+        <canvas class="plate-canvas js-plate" role="img" aria-label="전송 사진. 창문 없는 복도 끝에 문패 없는 검은 문이 있다."></canvas>
+        <div class="plate-drop" aria-hidden="true"><span>여기에 놓으면 이 사진으로 전송합니다</span></div>
+      </div>
+      <figcaption class="plate-cap">
+        <span class="js-plate-note">전송 사진 · 임시 그림</span>
+        <label class="plate-pick">사진 바꾸기<input type="file" accept="image/*" class="js-plate-file"></label>
+      </figcaption>
+    </figure>
+
+    <div class="turn js-turn">
+      <div class="page js-page-body" aria-live="polite"></div>
+
+      <div class="act">
+        <fieldset class="choices js-choices" disabled>
+          <legend class="choices-legend">칩 응답 요구 · 하나만 표시</legend>
+          <div class="choice-grid js-choice-list" tabindex="-1"></div>
+        </fieldset>
+        <button type="button" class="more js-more" aria-label="더 들여다본다" hidden><svg viewBox="0 0 26 14" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.6 7h20.6M16.2 1.4 22.6 7l-6.4 5.6"/></svg></button>
+        <div class="end js-end" hidden>
+          <p class="end-status js-end-status">신호 끊김</p>
+          <p class="end-next">다음 사본 <b class="js-next">0414</b> 대기</p>
+          <button type="button" class="again js-again">새 사본으로 다시 받기</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="rx-foot">
+      <div class="deadline is-idle js-deadline" role="timer" aria-live="off">
+        <span class="deadline-label">응답 기한</span>
+        <span class="deadline-cells js-cells" aria-hidden="true"></span>
+        <span class="deadline-secs"><b class="js-secs">12</b>초</span>
+      </div>
+      <p class="tx js-tx">송신 대기</p>
+    </footer>
+  </article>
+
+  <article class="sheet sheet--manual" aria-labelledby="mn-title">
+    <header class="fax-head">
+      <p class="fax-line">
+        <span>문서번호 <b>본부-이상-0007</b></span>
+        <span>보존 영구</span>
+        <span>P.02</span>
+      </p>
+    </header>
+
+    <div class="form-top">
+      <div>
+        <h2 id="mn-title" class="mn-title">이상현상 관리 매뉴얼</h2>
+        <p class="mn-subject">대상 <b>열쇠 꾸러미</b> · 잘못 베낀 집 · 작성 사본 0409~<span class="js-clone">0413</span></p>
+      </div>
+      <table class="approval" aria-label="결재란">
+        <tr><th scope="col">담당</th><th scope="col">검토</th><th scope="col">승인</th></tr>
+        <tr>
+          <td><span class="seal seal--small">기록</span></td>
+          <td><span class="seal seal--small">검토</span></td>
+          <td class="js-approve-cell"><span class="approve-empty">등급</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="slots-wrap js-slots-wrap">
+      <table class="slots">
+        <thead>
+          <tr><th scope="col">항목</th><th scope="col">기재</th><th scope="col">근거</th><th scope="col">상태</th></tr>
+        </thead>
+        <tbody>
+          <tr class="is-fixed">
+            <th scope="row">수거 지시</th>
+            <td><span class="fixed-value">이 집 주인이 매일 손에 쥐던 것</span></td>
+            <td class="cite">본부</td>
+            <td class="state state--fixed">확정</td>
+          </tr>
+          <tr>
+            <th scope="row">냄새·소리·온기가 없는 것에</th>
+            <td><select class="slot js-slot" data-key="sense" aria-label="냄새·소리·온기가 없는 것에">
+              <option value="">보기에서 고름</option>
+              <option value="normal">평소대로 쓴다</option>
+              <option value="pass">쓰지 않고 지나친다</option>
+              <option value="flip">뒤집어서 대한다</option>
+              <option value="ignore">모른 척한다</option>
+              <option value="clear">치운다</option>
+              <option value="check">소리 내어 확인한다</option>
+            </select></td>
+            <td class="cite js-cite" data-kind="sense">0412</td>
+            <td class="state">미확정</td>
+          </tr>
+          <tr>
+            <th scope="row">거꾸로 된 것에</th>
+            <td><select class="slot js-slot" data-key="flip" aria-label="거꾸로 된 것에">
+              <option value="">보기에서 고름</option>
+              <option value="normal">평소대로 쓴다</option>
+              <option value="pass">쓰지 않고 지나친다</option>
+              <option value="flip">뒤집어서 대한다</option>
+              <option value="ignore">모른 척한다</option>
+              <option value="clear">치운다</option>
+              <option value="check">소리 내어 확인한다</option>
+            </select></td>
+            <td class="cite js-cite" data-kind="flip">0409 · 0410</td>
+            <td class="state">미확정</td>
+          </tr>
+          <tr>
+            <th scope="row">하나 더 있는 것에</th>
+            <td><select class="slot js-slot" data-key="extra" aria-label="하나 더 있는 것에">
+              <option value="">보기에서 고름</option>
+              <option value="normal">평소대로 쓴다</option>
+              <option value="pass">쓰지 않고 지나친다</option>
+              <option value="flip">뒤집어서 대한다</option>
+              <option value="ignore">모른 척한다</option>
+              <option value="clear">치운다</option>
+              <option value="check">소리 내어 확인한다</option>
+            </select></td>
+            <td class="cite js-cite" data-kind="extra">0411</td>
+            <td class="state">미확정</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="submit-row">
+      <p class="rule-note">미확정 칸 셋을 한꺼번에 맞혀야 결재가 올라갑니다. 어느 칸이 틀렸는지는 알려 주지 않습니다.</p>
+      <button type="button" class="submit js-submit">결재 올리기</button>
+    </div>
+    <p class="verdict js-verdict" aria-live="polite"></p>
+
+    <section class="log" aria-labelledby="log-title">
+      <h3 id="log-title" class="log-title">칩 일지 · 최근 수신이 위</h3>
+      <ol class="log-list js-log" tabindex="0" aria-label="칩 일지">
+        <li class="entry gen-1">
+          <p class="entry-tag">0412 · 3회 · 부엌</p>
+          <p class="entry-body">밥을 한 술 뜬다. 체적 증가 기록 후 신호 끊김.</p>
+          <p class="entry-end is-dead">신호 끊김</p>
+          <p class="scrawl">김은 나는데 냄새가 없었다고?</p>
+        </li>
+        <li class="entry gen-2">
+          <p class="entry-tag">0411 · 3회 · 욕실</p>
+          <p class="entry-body">손가락을 하나씩 센다. 사본 중복 기록 후 신호 끊김.</p>
+          <p class="entry-end is-dead">신호 끊김</p>
+        </li>
+        <li class="entry gen-3">
+          <p class="entry-tag">0410 · 2회 · 안방</p>
+          <p class="entry-body">스위치를 내려서 켠다. 표시 기록: 스위치 거꾸로.</p>
+          <p class="entry-end">생존</p>
+        </li>
+        <li class="entry gen-3">
+          <p class="entry-tag">0409 · 1회 · 거실</p>
+          <p class="entry-body">시계를 보고 시간을 읽는다. 관절 역전 기록 후 신호 끊김.</p>
+          <p class="entry-end is-dead">신호 끊김</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="access js-access">
+      <h3 class="access-doc">인사기록카드 · 원본 · 성명 <span class="redact" role="img" aria-label="가려짐"></span></h3>
+      <p class="access-cond js-access-cond">열람 대기. 등급 S로 결재되면 열리고, 사본이 죽을수록 늦게 열립니다.</p>
+    </section>
+  </article>
+</main>
+<script src="content.js"></script>
+<script src="house.js"></script>
+<script src="run.js"></script>
+<script src="garble.js"></script>
+<script src="warp.js"></script>
+<script src="look.js"></script>
+</body>
+</html>
