@@ -261,11 +261,11 @@ const bgm = (() => {
     let at = now + 1.2;
     let gap = 0.72; // 첫 박동 간격(약 83bpm)
     let level = 1;
-    while (gap < 2.4) {
+    while (gap < 2.3) {
       heartbeat(at, level);
       at += gap;
-      gap *= 1.2;
-      level *= 0.86;
+      gap *= 1.3; // 첫 박동부터 눈에 띄게 늘어진다
+      level *= 0.82;
     }
     // 마지막 박동 다음 박동이 올 자리에서 배경이 꺼지고 신호음이 울린다.
     master.gain.setValueAtTime(1, now);
