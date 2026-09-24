@@ -77,24 +77,26 @@ const bgm = (() => {
     droneGain.gain.value = 0;
     const droneFilter = ctx.createBiquadFilter();
     droneFilter.type = "lowpass";
-    droneFilter.frequency.value = 260;
-    droneFilter.Q.value = 3;
+    droneFilter.frequency.value = 700;
+    droneFilter.Q.value = 2;
     droneFilter.connect(droneGain);
     droneGain.connect(master);
     droneGain.connect(verb);
-    [[BASE, "triangle", 0], [BASE * 1.004, "triangle", 0], [BASE / 2, "sine", 0], [BASE * 45 / 32, "sine", 0]].forEach(([f, type], i) => {
+    // 뿌리(55Hz)만으로는 노트북·폰 스피커에서 거의 안 들린다(에너지 95%가 100Hz 아래였다, 2026-09-24 실측).
+    // 그래서 두 옥타브 위(220Hz)와 그 위 삼온음 쪽에 몸통을 둔다. 뿌리는 헤드폰용 바닥으로만 깐다.
+    [[BASE, "triangle", 0.18], [BASE * 2, "triangle", 0.22], [BASE * 4, "sawtooth", 0.16], [BASE * 4.012, "sawtooth", 0.16], [BASE * 4 * 45 / 32, "triangle", 0.07], [BASE * 8, "sine", 0.04]].forEach(([f, type, level]) => {
       const o = ctx.createOscillator();
       o.type = type;
       o.frequency.value = f;
       const g = ctx.createGain();
-      g.gain.value = i === 3 ? 0.08 : 0.3;
+      g.gain.value = level;
       o.connect(g).connect(droneFilter);
       o.start();
     });
     const lfo = ctx.createOscillator();
     lfo.frequency.value = 0.045;
     const lfoAmt = ctx.createGain();
-    lfoAmt.gain.value = 140;
+    lfoAmt.gain.value = 320;
     lfo.connect(lfoAmt).connect(droneFilter.frequency);
     lfo.start();
 
@@ -104,8 +106,8 @@ const bgm = (() => {
     air.loop = true;
     const airFilter = ctx.createBiquadFilter();
     airFilter.type = "bandpass";
-    airFilter.frequency.value = 420;
-    airFilter.Q.value = 0.8;
+    airFilter.frequency.value = 900;
+    airFilter.Q.value = 0.6;
     const airGain = ctx.createGain();
     airGain.gain.value = 0;
     air.connect(airFilter).connect(airGain);
@@ -122,10 +124,10 @@ const bgm = (() => {
   }
 
   const LEVELS = {
-    house: { drone: 0.22, air: 0.10, pulse: 0, cutoff: 260, every: [5, 11] },
-    sikgu: { drone: 0.30, air: 0.16, pulse: 0.5, cutoff: 520, every: [1.2, 2.6] },
-    dead: { drone: 0.26, air: 0.14, pulse: 0, cutoff: 260, every: null },
-    calm: { drone: 0.12, air: 0.06, pulse: 0, cutoff: 200, every: [10, 18] },
+    house: { drone: 0.30, air: 0.30, pulse: 0, cutoff: 700, every: [3, 7] },
+    sikgu: { drone: 0.36, air: 0.40, pulse: 0.5, cutoff: 1200, every: [1.2, 2.6] },
+    dead: { drone: 0.34, air: 0.36, pulse: 0, cutoff: 700, every: null },
+    calm: { drone: 0.18, air: 0.16, pulse: 0, cutoff: 500, every: [8, 14] },
   };
 
   function ramp(param, value, seconds) {
@@ -162,7 +164,7 @@ const bgm = (() => {
     bp.frequency.value = f * 1.5;
     bp.Q.value = 6;
     const g = ctx.createGain();
-    const peak = mood === "sikgu" ? 0.06 : 0.035;
+    const peak = mood === "sikgu" ? 0.09 : 0.06;
     const rise = mood === "sikgu" ? 0.6 : 2.5;
     const hold = mood === "sikgu" ? 1.2 : 3.5;
     g.gain.setValueAtTime(0, now);
