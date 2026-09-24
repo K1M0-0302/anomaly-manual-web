@@ -68,24 +68,80 @@ button {
 
 .switch { display: none; }
 
-/* 배경음 켜고 끄기. 책상 오른쪽 아래 구석에 기계 글씨로 둔다. */
+/* 배경음 크기. 오른쪽 위 구석, 책상 위에 기계 글씨로 둔다(2026-09-24 사용자 결정).
+   좁은 화면에서는 위 탭 막대(--bar) 아래로 내려온다. */
 .sound {
   position: fixed;
+  top: calc(var(--bar) + 10px);
   right: 12px;
-  bottom: 10px;
   z-index: 30;
-  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 6px;
   border: 1px solid var(--rule);
   background: var(--desk);
   color: var(--paper-shade);
   font-family: var(--f-machine);
   font-size: 12px;
-  cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.75;
+  transition: opacity 120ms var(--ease-out);
 }
 .sound:hover,
-.sound:focus-visible { opacity: 1; }
-.sound[aria-pressed="false"] { color: var(--rule); }
+.sound:focus-within { opacity: 1; }
+
+.sound-toggle {
+  padding: 1px 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.sound-toggle[aria-pressed="false"] { color: var(--rule); text-decoration: line-through; }
+.sound-toggle:focus-visible { outline: 1px solid var(--paper); }
+
+.sound-value {
+  min-width: 2.2em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 밀대: 가는 줄 위에 네모 손잡이. 채운 부분은 종이색이다. */
+.sound-volume {
+  --fill: 70%;
+  width: 96px;
+  height: 14px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.sound-volume::-webkit-slider-runnable-track {
+  height: 3px;
+  background: linear-gradient(to right, var(--paper-shade) var(--fill), var(--machine) var(--fill));
+}
+.sound-volume::-moz-range-track { height: 3px; background: var(--machine); }
+.sound-volume::-moz-range-progress { height: 3px; background: var(--paper-shade); }
+.sound-volume::-webkit-slider-thumb {
+  width: 10px;
+  height: 14px;
+  margin-top: -5.5px;
+  border: 0;
+  border-radius: 0;
+  background: var(--paper);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.sound-volume::-moz-range-thumb {
+  width: 10px;
+  height: 14px;
+  border: 0;
+  border-radius: 0;
+  background: var(--paper);
+}
+.sound-volume:focus-visible { outline: 1px solid var(--paper); outline-offset: 3px; }
 
 /* overflow: clip은 "피" 절(1342행 근처) 두 번째 .desk 규칙에 있다. 캐스케이드로 합쳐지지만 멀리 있다. */
 .desk {
@@ -1090,6 +1146,11 @@ body.is-debug .plate-pick { display: inline; }
 
   body.is-solo { --bar: 0px; }
   body.is-solo .switch { display: none; }
+
+  /* 오른쪽 위 소리 칸이 장 머리줄을 가리지 않게 책상을 그만큼 내린다. 칸도 조금 줄인다. */
+  .desk { padding-top: calc(var(--desk-pad-y) + 38px); }
+  .sound { right: 10px; padding: 4px 8px 4px 4px; }
+  .sound-volume { width: 80px; }
 
   .desk {
     grid-template-columns: minmax(0, 1fr);

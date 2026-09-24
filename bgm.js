@@ -12,8 +12,15 @@
 
 const bgm = (() => {
   const KEY = "copied-house-sound";
+  const VOL_KEY = "copied-house-volume";
+  const FULL = 0.9; // 음량 100%일 때 최종 출력
   let muted = false;
-  try { muted = localStorage.getItem(KEY) === "off"; } catch {}
+  let volume = 0.7; // 0~1. 오른쪽 위 밀대가 정한다.
+  try {
+    muted = localStorage.getItem(KEY) === "off";
+    const v = parseFloat(localStorage.getItem(VOL_KEY));
+    if (v >= 0 && v <= 1) volume = v;
+  } catch {}
 
   let ctx = null;
   let master = null; // 배경음 전체. muffle을 거친다.
@@ -233,7 +240,7 @@ const bgm = (() => {
     if (muted) return;
     if (!ctx) build();
     if (ctx.state === "suspended") ctx.resume();
-    ramp(bus.gain, 0.9, 1.5);
+    ramp(bus.gain, FULL * volume, 1.5);
     apply(3);
   }
 
@@ -356,5 +363,12 @@ const bgm = (() => {
     }
   }
 
-  return { start, mood: setMood, sting, setMuted, isMuted: () => muted };
+  // 밀대를 끄는 동안 바로 따라오도록 짧게 옮긴다.
+  function setVolume(v) {
+    volume = Math.min(1, Math.max(0, v));
+    try { localStorage.setItem(VOL_KEY, String(volume)); } catch {}
+    if (ctx && !muted) ramp(bus.gain, FULL * volume, 0.08);
+  }
+
+  return { start, mood: setMood, sting, setMuted, isMuted: () => muted, setVolume, volume: () => volume };
 })();

@@ -65,7 +65,11 @@
   <button type="button" class="switch-tab js-switch" data-show="manual" aria-pressed="false">매뉴얼<span class="switch-badge js-badge" hidden></span></button>
 </nav>
 
-<button type="button" class="sound js-sound" aria-pressed="true" aria-label="배경음">소리 켬</button>
+<div class="sound" role="group" aria-label="배경음">
+  <button type="button" class="sound-toggle js-sound" aria-pressed="true">소리</button>
+  <input type="range" class="sound-volume js-volume" min="0" max="100" step="1" value="70" aria-label="배경음 크기">
+  <output class="sound-value js-volume-value">70</output>
+</div>
 
 <main class="desk js-desk" data-show="rx">
   <article class="sheet sheet--rx" aria-labelledby="rx-title">

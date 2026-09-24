@@ -1429,10 +1429,23 @@ $(".js-plate-file").addEventListener("change", (e) => {
 
 // 배경음은 첫 조작에서 켠다. 브라우저가 그 전에는 소리를 막는다.
 const sound = $(".js-sound");
+const volume = $(".js-volume");
 const paintSound = () => {
-  sound.setAttribute("aria-pressed", String(!bgm.isMuted()));
-  sound.textContent = bgm.isMuted() ? "소리 끔" : "소리 켬";
+  const off = bgm.isMuted();
+  sound.setAttribute("aria-pressed", String(!off));
+  sound.textContent = off ? "소리 끔" : "소리";
+  const pct = Math.round(bgm.volume() * 100);
+  volume.value = String(pct);
+  volume.style.setProperty("--fill", `${pct}%`);
+  $(".js-volume-value").textContent = off ? "—" : String(pct);
 };
+// 밀대를 움직이면 크기를 바꾸고, 꺼져 있었으면 켠다.
+volume.addEventListener("input", () => {
+  bgm.setVolume(Number(volume.value) / 100);
+  if (bgm.isMuted()) bgm.setMuted(false);
+  else bgm.start();
+  paintSound();
+});
 sound.addEventListener("click", (e) => {
   e.stopPropagation();
   bgm.setMuted(!bgm.isMuted());
