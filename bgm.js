@@ -6,7 +6,8 @@
 // 분위기(mood):
 //   house  집 안. 드론과 가끔 긁는 음.
 //   sikgu  식구가 다가온다. 불협 음이 촘촘해지고 박동이 붙는다.
-//   dead   끊김. 모든 소리가 빠르게 잦아든 뒤 아주 낮은 웅웅거림만 남는다.
+//   dead   끊김. 소리가 물속처럼 먹먹해지고, 심장 박동이 점점 느려지다 멎고, 삐- 하는 긴 신호음이 남는다(death()).
+//          먹먹해지는 것은 배경음뿐이고, 박동과 신호음은 귀 안에서 나는 소리라 또렷하다.
 //   calm   살아 나왔다. 드론만 옅게.
 
 const bgm = (() => {
@@ -15,7 +16,10 @@ const bgm = (() => {
   try { muted = localStorage.getItem(KEY) === "off"; } catch {}
 
   let ctx = null;
-  let master = null;
+  let master = null; // 배경음 전체. muffle을 거친다.
+  let muffle = null; // 사망 때 닫히는 저역 통과 필터
+  let bus = null; // 최종 출력. 소리 끄기는 여기서 한다.
+  let dying = []; // 사망 시퀀스가 예약한 소리. 새 사본이 오면 멈춘다.
   let parts = null;
   let mood = "house";
   let depth = 1;
@@ -51,9 +55,17 @@ const bgm = (() => {
 
   function build() {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
+    bus = ctx.createGain();
+    bus.gain.value = 0;
+    bus.connect(ctx.destination);
+    muffle = ctx.createBiquadFilter();
+    muffle.type = "lowpass";
+    muffle.frequency.value = 20000;
+    muffle.Q.value = 0.7;
+    muffle.connect(bus);
     master = ctx.createGain();
-    master.gain.value = 0;
-    master.connect(ctx.destination);
+    master.gain.value = 1;
+    master.connect(muffle);
 
     const wet = ctx.createGain();
     wet.gain.value = 0.55;
@@ -112,7 +124,7 @@ const bgm = (() => {
   const LEVELS = {
     house: { drone: 0.22, air: 0.10, pulse: 0, cutoff: 260, every: [5, 11] },
     sikgu: { drone: 0.30, air: 0.16, pulse: 0.5, cutoff: 520, every: [1.2, 2.6] },
-    dead: { drone: 0.05, air: 0.03, pulse: 0, cutoff: 120, every: null },
+    dead: { drone: 0.26, air: 0.14, pulse: 0, cutoff: 260, every: null },
     calm: { drone: 0.12, air: 0.06, pulse: 0, cutoff: 200, every: [10, 18] },
   };
 
@@ -219,7 +231,7 @@ const bgm = (() => {
     if (muted) return;
     if (!ctx) build();
     if (ctx.state === "suspended") ctx.resume();
-    ramp(master.gain, 0.9, 1.5);
+    ramp(bus.gain, 0.9, 1.5);
     apply(3);
   }
 
@@ -228,7 +240,87 @@ const bgm = (() => {
     mood = next;
     depth = pageDepth;
     if (!ctx || muted) return;
-    apply(next === "dead" ? 0.8 : changed ? 2.5 : 4);
+    if (next === "dead") {
+      if (changed) death();
+      return;
+    }
+    if (changed) revive();
+    apply(changed ? 2.5 : 4);
+  }
+
+  // 사망: 먹먹해짐(0~2.5초) → 박동(1.2초부터, 점점 느리고 약하게) → 삐-(박동이 멎은 뒤 4초).
+  function death() {
+    clearTimeout(timer);
+    const now = ctx.currentTime;
+    apply(0.6); // 드론은 조금 부푼 채로 먹먹해진다
+    muffle.frequency.cancelScheduledValues(now);
+    muffle.frequency.setValueAtTime(muffle.frequency.value, now);
+    muffle.frequency.exponentialRampToValueAtTime(180, now + 2.5);
+    muffle.Q.setValueAtTime(4, now); // 막힌 공간의 웅웅거림
+
+    let at = now + 1.2;
+    let gap = 0.72; // 첫 박동 간격(약 83bpm)
+    let level = 1;
+    while (gap < 2.4) {
+      heartbeat(at, level);
+      at += gap;
+      gap *= 1.2;
+      level *= 0.86;
+    }
+    // 마지막 박동 다음 박동이 올 자리에서 배경이 꺼지고 신호음이 울린다.
+    master.gain.setValueAtTime(1, now);
+    master.gain.linearRampToValueAtTime(0.5, at - gap);
+    master.gain.linearRampToValueAtTime(0, at);
+    flatline(at + 0.3, 4);
+  }
+
+  // 쿵-쿵. 낮은 사인이 아래로 떨어지는 두 번. 둘째는 조금 약하다.
+  function heartbeat(at, level) {
+    [[0, 1], [0.19, 0.62]].forEach(([dt, k]) => {
+      const t = at + dt;
+      const o = ctx.createOscillator();
+      o.frequency.setValueAtTime(70, t);
+      o.frequency.exponentialRampToValueAtTime(34, t + 0.16);
+      const lp = ctx.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.frequency.value = 140;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.95 * level * k, t + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+      o.connect(lp).connect(g).connect(bus);
+      o.start(t);
+      o.stop(t + 0.32);
+      dying.push(o);
+    });
+  }
+
+  // 삐-. 심전도 모니터의 평탄 신호처럼 1kHz 사인이 길게 울리고 천천히 사라진다.
+  function flatline(at, hold) {
+    const o = ctx.createOscillator();
+    o.type = "sine";
+    o.frequency.value = 1000;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, at);
+    g.gain.linearRampToValueAtTime(0.09, at + 0.02);
+    g.gain.setValueAtTime(0.09, at + hold);
+    g.gain.linearRampToValueAtTime(0, at + hold + 1.5);
+    o.connect(g).connect(bus);
+    o.start(at);
+    o.stop(at + hold + 1.6);
+    dying.push(o);
+  }
+
+  // 새 사본: 예약된 사망 소리를 멈추고 먹먹함을 푼다.
+  function revive() {
+    const now = ctx.currentTime;
+    dying.forEach((o) => { try { o.stop(); } catch {} });
+    dying = [];
+    muffle.frequency.cancelScheduledValues(now);
+    muffle.frequency.setValueAtTime(muffle.frequency.value, now);
+    muffle.frequency.exponentialRampToValueAtTime(20000, now + 1.5);
+    muffle.Q.setValueAtTime(0.7, now);
+    ramp(master.gain, 1, 1.5);
   }
 
   // 점프스케어 순간: 짧게 치솟는 불협 덩어리.
@@ -256,7 +348,7 @@ const bgm = (() => {
     try { localStorage.setItem(KEY, off ? "off" : "on"); } catch {}
     if (off) {
       clearTimeout(timer);
-      if (ctx) ramp(master.gain, 0, 0.4);
+      if (ctx) ramp(bus.gain, 0, 0.4);
     } else {
       start();
     }
